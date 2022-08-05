@@ -2,15 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Item;
 use Carbon\Carbon;
-use DB;
-use App\Serializers\ItemSerializer;
-use App\Serializers\ItemsSerializer;
-use App\Http\Requests\ItemRequest;
+use App\Models\Item;
+use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use App\Http\Resources\ItemCollection;
+use App\Http\Requests\ItemRequest;
 use App\Http\Resources\ItemResource;
+use App\Http\Resources\ItemCollection;
 
 class ItemController extends ApiController
 {
@@ -20,21 +18,33 @@ class ItemController extends ApiController
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function statistics(): JsonResponse
+    public function statistics(Request $request): JsonResponse
     {
-        $total      = Item::count();
-        $avgPrice   = Item::avg('price');
-        $totalPrice = Item::whereMonth('created_at', Carbon::now()->month)->sum('price');
-        $websiteWithHighPrices = Item::selectRaw("sum(price) as total_prices, SUBSTRING_INDEX(SUBSTRING_INDEX(url, '://', -1),'/',1) as website")
+        $response = [];
+        $filter = $request->filter;
+
+        if(empty($filter) || $filter == 'total_items') {
+            $response['total_items'] =Item::count();
+        }
+
+        if(empty($filter) || $filter == 'average_price') {
+            $response['average_price'] = Item::avg('price');
+        }
+
+        if(empty($filter) || $filter == 'website_high_prices') {
+
+            $websiteWithHighPrices = Item::selectRaw("sum(price) as total_prices, SUBSTRING_INDEX(SUBSTRING_INDEX(url, '://', -1),'/',1) as website")
             ->groupBy('website')
             ->orderBy('total_prices', 'desc')->first();
 
-        return $this->success([
-            'total_items'            => $total,
-            'average_price'          => $avgPrice,
-            'website_high_prices'    => $websiteWithHighPrices['website'],
-            'total_price_this_month' => $totalPrice,
-        ]);
+            $response['website_high_prices'] = $websiteWithHighPrices['website'];
+        }
+
+        if(empty($filter) || $filter == 'total_price_this_month') {
+            $response['total_price_this_month'] = Item::whereMonth('created_at', Carbon::now()->month)->sum('price');
+        }
+
+        return $this->success($response);
     }
 
     /**
