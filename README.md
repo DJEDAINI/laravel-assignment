@@ -76,10 +76,11 @@ You can use the attached DB seeder to get data to work with.
 you can use `php artisan items:statistics` to show the full statistics details, an optional parameter is available to add some filters.
 
 > Filtering parameters:
-> `php artisan items:statistics --filter=total_items` is used to count total items number.
-> `php artisan items:statistics --filter=average_price` is used to calculate the avarage price of all items.
-> `php artisan items:statistics --filter=website_high_prices` is used to show the website with the highest total price of its items.
-> `php artisan items:statistics --filter=total_price_this_month` is used to calculate the total price of the items that have been created this month.
+
+    - `php artisan items:statistics --filter=total_items` is used to count total items number.
+    - `php artisan items:statistics --filter=average_price` is used to calculate the avarage price of all items.
+    - `php artisan items:statistics --filter=website_high_prices` is used to show the website with the highest total price of its items.
+    - `php artisan items:statistics --filter=total_price_this_month` is used to calculate the total price of the items that have been created this month.
 
 #### Running tests
 The attached test suite can be run using `php artisan test` command.
