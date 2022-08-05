@@ -28,7 +28,7 @@ class ItemRequest extends BaseRequest
         return [
             'name' => 'required|string|max:255',
             'price' => 'required|numeric',
-             'url' => 'required|url',
+            'url' => 'required|url',
             'description' => 'required|string',
         ];
     }
@@ -43,7 +43,7 @@ class ItemRequest extends BaseRequest
         return [
             'name' => 'required|string|max:255',
             'price' => 'required|numeric',
-             'url' => 'required|url',
+            'url' => 'required|url',
             'description' => 'required|string',
         ];
     }

@@ -2,8 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Locales\Language;
-use App\Exceptions\ValidationException;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 
@@ -80,12 +79,15 @@ class BaseRequest extends FormRequest
      * @param  \Illuminate\Contracts\Validation\Validator  $validator
      * @return void
      *
-     * @throws \Illuminate\Validation\ValidationException
+     * @throws \Illuminate\Http\Exceptions\HttpResponseException
      */
     protected function failedValidation(Validator $validator)
     {
-        throw (new ValidationException($validator))
-            ->errorBag($this->errorBag)
-            ->redirectTo($this->getRedirectUrl());
+        throw new HttpResponseException(
+            response()->json([
+                'status'    =>'error',
+                'errors' => $validator->errors(),
+            ], 422)
+        );
     }
 }

@@ -48,9 +48,11 @@ class ItemController extends ApiController
     {
         $item = Item::create($request->data());
 
-        return $this->success([
-            'item' => new ItemResource($item)
-        ]);
+        return $this->success(
+            ['item' => new ItemResource($item)],
+            'item created with success',
+            201
+        );
     }
 
     /**
@@ -64,8 +66,10 @@ class ItemController extends ApiController
     {
         $item->update($request->data());
 
-        return $this->success([
-            'item' => new ItemResource($item)
-        ]);
+        return $this->success(
+            ['item' => new ItemResource($item)],
+            'item updated with success',
+            200
+        );
     }
 }
