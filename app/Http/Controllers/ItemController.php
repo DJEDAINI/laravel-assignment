@@ -5,73 +5,61 @@ namespace App\Http\Controllers;
 use App\Models\Item;
 use App\Serializers\ItemSerializer;
 use App\Serializers\ItemsSerializer;
+use App\Http\Requests\ItemRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use League\CommonMark\CommonMarkConverter;
 
 class ItemController extends Controller
 {
+
+    /**
+     * Display a listing of the items [paginated].
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function index()
     {
-        $items = Item::all();
+        $items = Item::paginate(10);
 
         return JsonResponse::create(['items' => (new ItemsSerializer($items))->getData()]);
     }
 
-    public function store(Request $request)
+    /**
+     * Add new item.
+     *
+     * @param \App\Http\Requests\ItemRequest $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function store(ItemRequest $request): JsonResponse
     {
-        $this->validate($request, [
-          'name' => 'required|string|max:255',
-          'price' => 'required|numeric',
-           'url' => 'required|url',
-          'description' => 'required|string',
-        ]);
+        $item = Item::create($request->data());
 
-        $converter = new CommonMarkConverter(['html_input' => 'escape', 'allow_unsafe_links' => false]);
-
-        $item = Item::create([
-            'name' => $request->get('name'),
-            'price' => $request->get('price'),
-            'url' => $request->get('url'),
-            'description' => $converter->convert($request->get('description'))->getContent(),
-        ]);
-
-        $serializer = new ItemSerializer($item);
-
-        return new JsonResponse(['item' => $serializer->getData()]);
+        return new JsonResponse(['item' => (new ItemSerializer($item))->getData()]);
     }
 
-    public function show($id)
+    /**
+     * Show specific item.
+     *
+     * @param Item $item
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function show(Item $item)
     {
-        $item = Item::findOrFail($id);
-
-        $serializer = new ItemSerializer($item);
-
-        return new JsonResponse(['item' => $serializer->getData()]);
+        return new JsonResponse(['item' => (new ItemSerializer($item))->getData()]);
     }
 
-    public function update(Request $request, int $id): JsonResponse
+    /**
+     * Update an existiing item.
+     *
+     * @param Item $item
+     * @param \App\Http\Requests\ItemRequest $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function update(ItemRequest $request, Item $item): JsonResponse
     {
-        $this->validate($request, [
-            'name' => 'required|string|max:255',
-            'price' => 'required|numeric',
-            'url' => 'required|url',
-            'description' => 'required|string',
-        ]);
+        $item->update($request->data());
 
-        $converter = new CommonMarkConverter(['html_input' => 'escape', 'allow_unsafe_links' => false]);
-
-        $item = Item::findOrFail($id);
-        $item->name = $request->get('name');
-        $item->url = $request->get('url');
-        $item->price = $request->get('price');
-        $item->description = $converter->convert($request->get('description'))->getContent();
-        $item->save();
-
-        return new JsonResponse(
-            [
-                'item' => (new ItemSerializer($item))->getData()
-            ]
-        );
+        return new JsonResponse(['item' => (new ItemSerializer($item))->getData()]);
     }
 }
