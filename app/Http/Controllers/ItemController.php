@@ -24,7 +24,7 @@ class ItemController extends ApiController
         $filter = $request->filter;
 
         if(empty($filter) || $filter == 'total_items') {
-            $response['total_items'] =Item::count();
+            $response['total_items'] = Item::count();
         }
 
         if(empty($filter) || $filter == 'average_price') {

@@ -35,6 +35,34 @@ Please write your answers to following questions.
 >  
 > _..._
 
+## Answers
+
+> **Please briefly explain your implementation of the new feature**  
+>  
+> Answer: 
+
+    the first thing i did was the code refactoring.
+
+    these are the steps i have followed:
+        1. Return a paginated list (10 items per page) of items either than the full list to avoid memory exception errors when the items list will be increased.
+        2. Move requests validation process to a custom request classes that encapsulate their own validation and authorization logic.
+        3. Create a standarized format of the APIs response and made available in all sub-controllers of ApiController.
+        4. Make benefit of some of the built-in features in laravel [JsonResource, ResourceCollection] in order to specifiy the JSON format of the items.
+
+    after that i have created new api endpoint `/items/statistics` to show some statistics of the items, these statistics are also provided in the console application using `php artisan items:statistics` command.
+
+    these are the steps i have followed:
+        1. Create new route with statistics controller method to return the required statistics.
+        2. Add filter request paramter to show the statistics details based on it.
+        3. Create new command using `php artisan make:command ItemsStatistics` to be used to display the statistics.
+        4. Add an optional command option to filter the statistics details and show only single information, the filtering process with be done inside the controller method directly.
+        5. Add some validation wihtin the command's handling logic.
+        6. Show the result in table format.
+
+> **For the refactoring, would you change something else if you had more time?**  
+>  
+> Answer: 
+
 ## Running the project
 This project requires a database to run. For the server part, you can use `php artisan serve`
 or whatever you're most comfortable with.
