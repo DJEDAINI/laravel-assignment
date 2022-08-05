@@ -7,10 +7,10 @@ use App\Serializers\ItemSerializer;
 use App\Serializers\ItemsSerializer;
 use App\Http\Requests\ItemRequest;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use League\CommonMark\CommonMarkConverter;
+use App\Http\Resources\ItemCollection;
+use App\Http\Resources\ItemResource;
 
-class ItemController extends Controller
+class ItemController extends ApiController
 {
 
     /**
@@ -18,11 +18,24 @@ class ItemController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function index()
+    public function index(): JsonResponse
     {
         $items = Item::paginate(10);
 
-        return JsonResponse::create(['items' => (new ItemsSerializer($items))->getData()]);
+        return $this->success((new ItemCollection($items))->response()->getData(true));
+    }
+
+    /**
+     * Show specific item.
+     *
+     * @param Item $item
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function show(Item $item): JsonResponse
+    {
+        return $this->success([
+            'item' => new ItemResource($item)
+        ]);
     }
 
     /**
@@ -35,18 +48,9 @@ class ItemController extends Controller
     {
         $item = Item::create($request->data());
 
-        return new JsonResponse(['item' => (new ItemSerializer($item))->getData()]);
-    }
-
-    /**
-     * Show specific item.
-     *
-     * @param Item $item
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function show(Item $item)
-    {
-        return new JsonResponse(['item' => (new ItemSerializer($item))->getData()]);
+        return $this->success([
+            'item' => new ItemResource($item)
+        ]);
     }
 
     /**
@@ -60,6 +64,8 @@ class ItemController extends Controller
     {
         $item->update($request->data());
 
-        return new JsonResponse(['item' => (new ItemSerializer($item))->getData()]);
+        return $this->success([
+            'item' => new ItemResource($item)
+        ]);
     }
 }
