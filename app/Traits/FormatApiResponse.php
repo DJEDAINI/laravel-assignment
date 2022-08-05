@@ -6,20 +6,32 @@ trait FormatApiResponse {
 
     protected function success($data, string $message = null, int $code = 200)
 	{
-		return response()->json([
-			'status'    => 'success', 
-			'message'   => $message, 
-			'data'      => $data
-		], $code);
+        $response = ['status' => 'success'];
+        
+        if(!is_null($message)) {
+            $response['message'] = $message;
+        }
+
+        if(!is_null($data)) {
+            $response['data'] = $data;
+        }
+
+		return response()->json($response, $code);
 	}
 
 	protected function failed($errors, string $message = null, int $code)
 	{
-		return response()->json([
-			'status'    =>'error',
-			'message'   => $message,
-            'errors'    => $errors
-		], $code);
+        $response = ['status'    => 'success'];
+        
+        if($message) {
+            $response[] = ['message'   => $message];
+        }
+
+        if($errors) {
+            $response[] = ['errors'   => $errors];
+        }
+
+		return response()->json($response, $code);
 	}
 
 }

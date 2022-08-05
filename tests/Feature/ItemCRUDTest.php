@@ -21,8 +21,9 @@ class ItemCRUDTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertJson(function (AssertableJson $json) {
-            $json->has('items')->etc();
-            $json->has('items.0', function (AssertableJson $json) {
+            // items array is inside data array
+            $json->has('data.items')->etc();
+            $json->has('data.items.0', function (AssertableJson $json) {
                 $json
                     ->whereType('id', 'integer')
                     ->whereType('name', 'string')
@@ -49,7 +50,8 @@ class ItemCRUDTest extends TestCase
 
         $response->assertStatus(200);
 
-        $responseItem = $response->json()['item'];
+        // item object is inside data array
+        $responseItem = $response->json()['data']['item'];
 
         $this->assertSame($item->id, $responseItem['id']);
         $this->assertSame($attributes['name'], $responseItem['name']);
@@ -67,7 +69,8 @@ class ItemCRUDTest extends TestCase
             'description' => 'Test **item** description',
         ]);
 
-        $this->assertSame('New item', $response->json()['item']['name']);
+        // item object is inside data array
+        $this->assertSame('New item', $response->json()['data']['item']['name']);
 
         $this->assertDatabaseHas(Item::class, [
             'name' => 'New item',
@@ -100,10 +103,11 @@ class ItemCRUDTest extends TestCase
             'description' => 'Test _item_ description',
         ]);
 
-        $this->assertSame('Updated title', $response->json()['item']['name']);
+        // item object is inside data array
+        $this->assertSame('Updated title', $response->json()['data']['item']['name']);
         $this->assertSame(
             '<p>Test <em>item</em> description</p>',
-            $response->json()['item']['description']
+            $response->json()['data']['item']['description']
         );
 
         $this->assertDatabaseHas(Item::class, [
