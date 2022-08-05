@@ -28,7 +28,7 @@ class ItemController extends ApiController
         }
 
         if(empty($filter) || $filter == 'average_price') {
-            $response['average_price'] = Item::avg('price');
+            $response['average_price'] = (double) Item::avg('price');
         }
 
         if(empty($filter) || $filter == 'website_high_prices') {
@@ -37,7 +37,7 @@ class ItemController extends ApiController
             ->groupBy('website')
             ->orderBy('total_prices', 'desc')->first();
 
-            $response['website_high_prices'] = $websiteWithHighPrices['website'];
+            $response['website_high_prices'] = $websiteWithHighPrices['website'] ?? 0;
         }
 
         if(empty($filter) || $filter == 'total_price_this_month') {
